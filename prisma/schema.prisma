@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads     Lead[]
+  posts     Post[]
+  comments  Comment[]
+
+  @@map("users")
+}
+
+model Lead {
+  id           String     @id @default(cuid())
+  email        String
+  company      String
+  name         String?
+  countries    String[]
+  teamSize     String
+  timeline     String
+  status       LeadStatus @default(NEW)
+  source       String?
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  assignedTo   User?      @relation(fields: [assignedToId], references: [id])
+  assignedToId String?
+
+  @@map("leads")
+}
+
+model Post {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  excerpt     String?
+  content     String
+  category    PostCategory
+  tags        String[]
+  published   Boolean     @default(false)
+  featured    Boolean     @default(false)
+  imageUrl    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  publishedAt DateTime?
+  
+  author      User        @relation(fields: [authorId], references: [id])
+  authorId    String
+  comments    Comment[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+
+  @@map("comments")
+}
+
+model Partner {
+  id          String   @id @default(cuid())
+  name        String
+  logo        String
+  description String
+  affiliateUrl String
+  category    String
+  featured    Boolean  @default(false)
+  active      Boolean  @default(true)
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("partners")
+}
+
+model Country {
+  id               String @id @default(cuid())
+  name             String @unique
+  code             String @unique
+  region           String
+  minimumWage      Float?
+  averageSalary    Float?
+  taxRate          Float?
+  visaRequired     Boolean @default(false)
+  eorAvailable     Boolean @default(false)
+  payrollComplexity String?
+  currency         String
+  languages        String[]
+  businessHours    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("countries")
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
+}
+
+enum PostCategory {
+  POLICY
+  COMPLIANCE
+  MARKET_TRENDS
+  TECHNOLOGY
+  HR_MANAGEMENT
+  PAYROLL
+  IMMIGRATION
+}
