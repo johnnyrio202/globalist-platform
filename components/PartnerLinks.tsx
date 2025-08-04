@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ExternalLink, Calculator, FileText, MapPin } from 'lucide-react'
 import Link from 'next/link'
 
@@ -14,7 +14,6 @@ type Partner = {
   featured: boolean
 }
 
-// Sample partner data with your affiliate links
 const samplePartners: Partner[] = [
   {
     id: '1',
@@ -30,3 +29,8 @@ const samplePartners: Partner[] = [
     name: 'Deel',
     logo: '🌍',
     description: 'Mixed contractor/employee teams',
+    affiliateUrl: 'https://bit.ly/4d1hG8G',
+    category: 'EOR',
+    featured: true
+  },
+  {
